@@ -9,15 +9,39 @@ pipeline {
             }
         }
 
+        stage('Environment Check') {
+            steps {
+                sh '''
+                    echo "===== Environment ====="
+                    echo "User: $(whoami)"
+                    echo "PATH: $PATH"
+
+                    echo "===== Node ====="
+                    which node || true
+                    node --version || true
+
+                    echo "===== NPM ====="
+                    which npm || true
+                    npm --version || true
+
+                    echo "===== Java ====="
+                    java -version || true
+
+                    echo "===== Allure ====="
+                    allure --version || true
+                '''
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh 'npm ci'
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
-                sh 'npx playwright install'
+                sh 'npx playwright install --with-deps'
             }
         }
 
@@ -31,6 +55,20 @@ pipeline {
             steps {
                 sh 'npm run allure:generate'
             }
+        }
+    }
+
+    post {
+        always {
+            echo '===== Test Execution Completed ====='
+        }
+
+        success {
+            echo '✅ Pipeline completed successfully'
+        }
+
+        failure {
+            echo '❌ Pipeline failed. Check the console output.'
         }
     }
 }
