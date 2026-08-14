@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'Node20'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -13,35 +17,35 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Environment ====="
-                    echo "User: $(whoami)"
+                    whoami
                     echo "PATH: $PATH"
 
                     echo "===== Node ====="
-                    which node || true
-                    node --version || true
+                    which node
+                    node --version
 
                     echo "===== NPM ====="
-                    which npm || true
-                    npm --version || true
+                    which npm
+                    npm --version
 
                     echo "===== Java ====="
-                    java -version || true
+                    java -version
 
                     echo "===== Allure ====="
-                    allure --version || true
+                    allure --version
                 '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                sh 'npm install'
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
-                sh 'npx playwright install --with-deps'
+                sh 'npx playwright install'
             }
         }
 
@@ -55,20 +59,6 @@ pipeline {
             steps {
                 sh 'npm run allure:generate'
             }
-        }
-    }
-
-    post {
-        always {
-            echo '===== Test Execution Completed ====='
-        }
-
-        success {
-            echo '✅ Pipeline completed successfully'
-        }
-
-        failure {
-            echo '❌ Pipeline failed. Check the console output.'
         }
     }
 }
