@@ -1,0 +1,8 @@
+{
+    "validUser": {
+        "username": "keerthana.s@thinkinfinity.co.in"
+    },
+    "invalidUser": {
+        "username": "keerthana@gmail.com"
+    }
+}
