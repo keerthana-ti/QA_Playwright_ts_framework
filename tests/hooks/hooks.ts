@@ -7,7 +7,7 @@ import { LoginPage } from '../../pages/LoginPages';
 Before(async function (this: CustomWorld) {
 
     this.browser = await chromium.launch({
-        headless: false
+        headless: true
     });
 
     this.context = await this.browser.newContext();
