@@ -2,11 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'Node20'
-    }
-
-    environment {
-        CHAINEX_PASSWORD = credentials('chainex-password')
+        nodejs 'Node24'
     }
 
     stages {
@@ -21,7 +17,7 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Environment ====="
-                    echo "User: $(whoami)"
+                    whoami
                     echo "PATH: $PATH"
 
                     echo "===== Node ====="
@@ -38,17 +34,33 @@ pipeline {
                     echo "===== Allure ====="
                     allure --version
 
-                    echo "===== Credential Check ====="
-                    echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
-                    echo "Password length: ${#CHAINEX_PASSWORD}"
-                    printf '%s' "$CHAINEX_PASSWORD" | sha256sum
+                    echo "===== Application Config ====="
+                    echo "BASE_URL configured: ${BASE_URL:+YES}"
                 '''
+            }
+        }
+
+        stage('Credential Check') {
+            steps {
+                withCredentials([
+                    string(
+                        credentialsId: 'chainex-password',
+                        variable: 'CHAINEX_PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                        echo "===== Credential Check ====="
+                        echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
+                        echo "Password length: ${#CHAINEX_PASSWORD}"
+                        printf '%s' "$CHAINEX_PASSWORD" | sha256sum
+                    '''
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                sh 'npm install'
             }
         }
 
@@ -60,10 +72,14 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh '''
-                    echo "===== Run Tests ====="
-                    npx cucumber-js --format progress
-                '''
+                withCredentials([
+                    string(
+                        credentialsId: 'chainex-password',
+                        variable: 'CHAINEX_PASSWORD'
+                    )
+                ]) {
+                    sh 'npx cucumber-js --format progress'
+                }
             }
         }
 
@@ -77,14 +93,6 @@ pipeline {
     post {
         always {
             echo '===== Pipeline Completed ====='
-        }
-
-        success {
-            echo '✅ Tests and Allure report generated successfully.'
-        }
-
-        failure {
-            echo '❌ Pipeline failed. Please check the stage logs.'
         }
     }
 }
