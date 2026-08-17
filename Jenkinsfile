@@ -74,7 +74,7 @@ pipeline {
             steps {
                 withCredentials([
                     string(
-                        credentialsId: 'chainex-password',
+                        credentialsId: 'chainex-password-secret',
                         variable: 'CHAINEX_PASSWORD'
                     )
                 ]) {
