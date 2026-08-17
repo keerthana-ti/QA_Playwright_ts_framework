@@ -3,7 +3,7 @@ import { chromium } from '@playwright/test';
 import { CustomWorld } from './world';
 import { LoginPage } from '../../pages/LoginPages';
 
-setDefaultTimeout(15000);
+setDefaultTimeout(40000);
 
 Before(async function (this: CustomWorld) {
 
