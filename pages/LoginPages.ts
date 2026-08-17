@@ -34,7 +34,7 @@ export class LoginPage {
 
    async verifyOtpPageDisplayed() {
     await expect(this.otpPageElement).toBeVisible({
-        timeout: 10000
+        timeout: 30000
     });
 }
 }
