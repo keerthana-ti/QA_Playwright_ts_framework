@@ -55,7 +55,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'npx cucumber-js --format progress'
+                sh 'npm test'
             }
         }
 
