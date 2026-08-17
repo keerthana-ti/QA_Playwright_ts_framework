@@ -2,7 +2,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'Node20'
+        nodejs 'Node24'
+    }
+
+    environment {
+        CHAINEX_PASSWORD = credentials('chainex-password')
     }
 
     stages {
@@ -17,7 +21,7 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Environment ====="
-                    whoami
+                    echo "User: $(whoami)"
                     echo "PATH: $PATH"
 
                     echo "===== Node ====="
@@ -39,11 +43,11 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh 'npm ci'
             }
         }
 
-        stage('Install Playwright Browsers') {
+        stage('Install Playwright Browser') {
             steps {
                 sh 'npx playwright install chromium'
             }
@@ -59,6 +63,20 @@ pipeline {
             steps {
                 sh 'npm run allure:generate'
             }
+        }
+    }
+
+    post {
+        always {
+            echo '===== Pipeline Completed ====='
+        }
+
+        success {
+            echo '✅ Tests and Allure report generated successfully.'
+        }
+
+        failure {
+            echo '❌ Pipeline failed. Please check the stage logs.'
         }
     }
 }
