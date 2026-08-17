@@ -30,22 +30,11 @@ export class LoginPage {
 
     async clickLogin() {
     await this.loginButton.click();
-
-    await this.page.waitForTimeout(3000);
-
-    console.log('===== AFTER LOGIN =====');
-    console.log('URL:', this.page.url());
-    console.log('TITLE:', await this.page.title());
-    console.log('OTP count:', await this.otpPageElement.count());
-
-    console.log(
-        (await this.page.locator('body').innerText()).substring(0, 2000)
-    );
-}
+    }
 
    async verifyOtpPageDisplayed() {
     await expect(this.otpPageElement).toBeVisible({
-        timeout: 30000
+        timeout: 10000
     });
 }
 }

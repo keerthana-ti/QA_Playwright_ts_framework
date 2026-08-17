@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'Node20'
+        nodejs 'Node24'
     }
 
     stages {
@@ -17,15 +17,13 @@ pipeline {
             steps {
                 sh '''
                     echo "===== Environment ====="
-                    whoami
+                    echo "User: $(whoami)"
                     echo "PATH: $PATH"
 
                     echo "===== Node ====="
-                    which node
                     node --version
 
                     echo "===== NPM ====="
-                    which npm
                     npm --version
 
                     echo "===== Java ====="
@@ -37,24 +35,6 @@ pipeline {
                     echo "===== Application Config ====="
                     echo "BASE_URL configured: ${BASE_URL:+YES}"
                 '''
-            }
-        }
-
-        stage('Credential Check') {
-            steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'chainex-password-secret',
-                        variable: 'CHAINEX_PASSWORD'
-                    )
-                ]) {
-                    sh '''
-                        echo "===== Credential Check ====="
-                        echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
-                        echo "Password length: ${#CHAINEX_PASSWORD}"
-                        printf '%s' "$CHAINEX_PASSWORD" | sha256sum
-                    '''
-                }
             }
         }
 
@@ -78,7 +58,7 @@ pipeline {
                         variable: 'CHAINEX_PASSWORD'
                     )
                 ]) {
-                    sh 'npx cucumber-js --format progress'
+                    sh 'npm test'
                 }
             }
         }
