@@ -43,7 +43,7 @@ pipeline {
                     echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
                 '''
             }
-        }   
+        }
 
         stage('Install Dependencies') {
             steps {
@@ -59,7 +59,13 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'npx cucumber-js --format progress --timeout 15000'
+                sh '''
+                    echo "===== Cucumber Config ====="
+                    grep -n "timeout" cucumber.js
+
+                    echo "===== Run Tests ====="
+                    npx cucumber-js --format progress
+                '''
             }
         }
 
