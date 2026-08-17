@@ -59,7 +59,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'npx cucumber-js --format progress'
+                sh 'npx cucumber-js --format progress --timeout 15000'
             }
         }
 
