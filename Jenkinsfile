@@ -37,9 +37,13 @@ pipeline {
 
                     echo "===== Allure ====="
                     allure --version
+
+                    echo "===== Application Config ====="
+                    echo "BASE_URL configured: ${BASE_URL:+YES}"
+                    echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
                 '''
             }
-        }
+        }   
 
         stage('Install Dependencies') {
             steps {
@@ -55,7 +59,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                sh 'npx cucumber-js --format progress'
             }
         }
 
