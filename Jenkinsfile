@@ -60,9 +60,6 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    echo "===== Cucumber Config ====="
-                    grep -n "timeout" cucumber.js
-
                     echo "===== Run Tests ====="
                     npx cucumber-js --format progress
                 '''
