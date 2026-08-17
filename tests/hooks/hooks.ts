@@ -1,8 +1,9 @@
-import { Before, After } from '@cucumber/cucumber';
+import { Before, After, setDefaultTimeout } from '@cucumber/cucumber';
 import { chromium } from '@playwright/test';
 import { CustomWorld } from './world';
 import { LoginPage } from '../../pages/LoginPages';
 
+setDefaultTimeout(15000);
 
 Before(async function (this: CustomWorld) {
 

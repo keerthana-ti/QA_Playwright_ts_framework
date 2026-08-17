@@ -19,8 +19,6 @@ module.exports = {
       'allure-cucumberjs/reporter'
     ],
 
-    timeout: 15000,
-
     publishQuiet: true
   }
 };
