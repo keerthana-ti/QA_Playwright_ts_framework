@@ -38,9 +38,10 @@ pipeline {
                     echo "===== Allure ====="
                     allure --version
 
-                    echo "===== Application Config ====="
-                    echo "BASE_URL configured: ${BASE_URL:+YES}"
+                    echo "===== Credential Check ====="
                     echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
+                    echo "Password length: ${#CHAINEX_PASSWORD}"
+                    printf '%s' "$CHAINEX_PASSWORD" | sha256sum
                 '''
             }
         }
