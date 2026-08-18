@@ -63,18 +63,24 @@ pipeline {
                 }
             }
         }
-
-        stage('Publish Allure Report') {
-            steps {
-                allure(
-                    results: [[path: 'allure-results']]
-                )
-            }
-        }
     }
 
     post {
+
         always {
+            echo '===== Publishing Allure Report ====='
+
+            allure(
+                results: [[path: 'allure-results']]
+            )
+
+            echo '===== Publishing Test Artifacts ====='
+
+            archiveArtifacts(
+                artifacts: 'test-results/**/*',
+                allowEmptyArchive: true
+            )
+
             echo '===== Pipeline Completed ====='
         }
     }
