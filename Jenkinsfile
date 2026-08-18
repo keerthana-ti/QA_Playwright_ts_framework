@@ -3,6 +3,7 @@ pipeline {
 
     tools {
         nodejs 'Node20'
+        allure 'Allure'
     }
 
     stages {
@@ -63,9 +64,11 @@ pipeline {
             }
         }
 
-        stage('Generate Allure Report') {
+        stage('Publish Allure Report') {
             steps {
-                sh 'npm run allure:generate'
+                allure(
+                    results: [[path: 'allure-results']]
+                )
             }
         }
     }
