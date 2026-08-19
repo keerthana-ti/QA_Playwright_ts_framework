@@ -12,6 +12,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      BASE_URL: ${{ vars.BASE_URL }}
+      CHAINEX_PASSWORD: ${{ secrets.CHAINEX_PASSWORD }}
+
     steps:
 
       - name: Checkout code
@@ -22,6 +26,14 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+
+      - name: Environment Check
+        run: |
+          echo "===== Environment ====="
+          echo "Node: $(node --version)"
+          echo "NPM: $(npm --version)"
+          echo "BASE_URL configured: ${BASE_URL:+YES}"
+          echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
 
       - name: Install dependencies
         run: npm ci
