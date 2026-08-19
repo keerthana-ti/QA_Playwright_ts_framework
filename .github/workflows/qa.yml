@@ -47,6 +47,18 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium
 
+      - name: Prepare Allure Environment
+        run: |
+          mkdir -p allure-results
+
+          echo "Environment=Staging" > allure-results/environment.properties
+          echo "Browser=Chromium" >> allure-results/environment.properties
+          echo "Automation=Playwright" >> allure-results/environment.properties
+          echo "Framework=Cucumber" >> allure-results/environment.properties
+          echo "Node=$(node --version)" >> allure-results/environment.properties
+          echo "NPM=$(npm --version)" >> allure-results/environment.properties
+          echo "BaseURL=${BASE_URL}" >> allure-results/environment.properties  
+
       - name: Run tests
         run: npm test
 
