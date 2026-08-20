@@ -1,5 +1,6 @@
 import { Before, After, setDefaultTimeout } from '@cucumber/cucumber';
 import { chromium } from '@playwright/test';
+import { readFile } from 'fs/promises';
 import { CustomWorld } from './world';
 import { LoginPage } from '../../pages/LoginPages';
 
@@ -24,12 +25,11 @@ Before(async function (this: CustomWorld) {
     });
 });
 
-
 After(async function (this: CustomWorld, scenario) {
 
     if (scenario.result?.status === 'FAILED') {
 
-        // Screenshot
+        // Capture screenshot
         const screenshot = await this.page.screenshot({
             fullPage: true
         });
@@ -39,14 +39,23 @@ After(async function (this: CustomWorld, scenario) {
             'image/png'
         );
 
-        // Save trace
+        // Stop tracing and save trace
         const tracePath = `test-results/${Date.now()}-trace.zip`;
 
         await this.context.tracing.stop({
             path: tracePath
         });
 
-        console.log(`Trace saved: ${tracePath}`);
+        // Read the actual ZIP file
+        const trace = await readFile(tracePath);
+
+        // Attach actual trace ZIP to Allure
+        await this.attach(
+            trace,
+            'application/zip'
+        );
+
+        console.log(`Trace saved and attached: ${tracePath}`);
 
     } else {
 
