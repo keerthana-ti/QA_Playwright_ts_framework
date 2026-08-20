@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -89,7 +89,7 @@ jobs:
             ls -la allure-results/history
           else
             echo "No previous history available."
-          fi  
+          fi
 
       - name: Generate Allure Report
         if: always()
@@ -108,7 +108,37 @@ jobs:
           else
             echo "Allure history directory not found."
             exit 1
-          fi  
+          fi
+
+      - name: Update Allure History Branch
+        if: always()
+        run: |
+          if [ ! -d "history-to-save/history" ]; then
+            echo "No history to save."
+            exit 0
+          fi
+
+          echo "Preparing allure-history branch..."
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git worktree add ../allure-history-work origin/allure-history
+
+          rm -rf ../allure-history-work/history
+          cp -R history-to-save/history ../allure-history-work/history
+
+          cd ../allure-history-work
+
+          git add history
+
+          if git diff --cached --quiet; then
+            echo "No changes to Allure history."
+          else
+            git commit -m "Update Allure history"
+            git push origin HEAD:allure-history
+            echo "Allure history updated successfully."
+          fi
 
       - name: Upload Allure Report Artifact
         if: always()
