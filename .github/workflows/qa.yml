@@ -78,6 +78,19 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Restore Allure History
+        if: always()
+        run: |
+          if [ -d "previous-history/history" ]; then
+            echo "Restoring previous Allure history..."
+            mkdir -p allure-results/history
+            cp -R previous-history/history/. allure-results/history/
+            echo "Allure history restored:"
+            ls -la allure-results/history
+          else
+            echo "No previous history available."
+          fi  
+
       - name: Generate Allure Report
         if: always()
         run: npm run allure:generate
