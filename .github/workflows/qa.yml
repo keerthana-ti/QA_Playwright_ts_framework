@@ -27,6 +27,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Get Allure History
+        run: |
+          rm -rf previous-history
+          mkdir -p previous-history
+
+          git fetch origin allure-history:refs/remotes/origin/allure-history
+
+          git archive origin/allure-history history 2>/dev/null | tar -x -C previous-history || true
+
+          if [ -d "previous-history/history" ]; then
+            echo "Previous Allure history found."
+            ls -la previous-history/history
+          else
+            echo "No previous Allure history found. This may be the first run."
+          fi  
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
