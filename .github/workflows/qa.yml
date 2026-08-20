@@ -95,6 +95,21 @@ jobs:
         if: always()
         run: npm run allure:generate
 
+      - name: Save Allure History
+        if: always()
+        run: |
+          rm -rf history-to-save
+          mkdir -p history-to-save
+
+          if [ -d "allure-report/history" ]; then
+            cp -R allure-report/history history-to-save/
+            echo "New Allure history prepared."
+            ls -la history-to-save/history
+          else
+            echo "Allure history directory not found."
+            exit 1
+          fi  
+
       - name: Upload Allure Report Artifact
         if: always()
         uses: actions/upload-artifact@v4
