@@ -39,9 +39,18 @@ After(async function (this: CustomWorld, scenario) {
             'image/png'
         );
 
-        // Stop tracing and save trace
-        const tracePath = `test-results/${Date.now()}-trace.zip`;
+        // Create a meaningful trace filename
+        const scenarioName = scenario.pickle.name
+            .replace(/[^a-zA-Z0-9-_]/g, '_');
 
+        const timestamp = new Date()
+            .toISOString()
+            .replace(/[:.]/g, '-');
+
+        const tracePath =
+            `test-results/${scenarioName}-${timestamp}-playwright-trace.zip`;
+
+        // Stop tracing and save trace
         await this.context.tracing.stop({
             path: tracePath
         });
