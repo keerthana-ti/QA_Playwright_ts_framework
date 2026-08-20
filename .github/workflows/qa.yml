@@ -15,7 +15,6 @@ permissions:
 jobs:
 
   test:
-
     runs-on: ubuntu-latest
 
     env:
@@ -34,14 +33,15 @@ jobs:
 
           git fetch origin allure-history:refs/remotes/origin/allure-history
 
-          git archive origin/allure-history history 2>/dev/null | tar -x -C previous-history || true
+          git archive origin/allure-history history 2>/dev/null \
+            | tar -x -C previous-history || true
 
           if [ -d "previous-history/history" ]; then
             echo "Previous Allure history found."
             ls -la previous-history/history
           else
             echo "No previous Allure history found. This may be the first run."
-          fi  
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -73,7 +73,7 @@ jobs:
           echo "Framework=Cucumber" >> allure-results/environment.properties
           echo "Node=$(node --version)" >> allure-results/environment.properties
           echo "NPM=$(npm --version)" >> allure-results/environment.properties
-          echo "BaseURL=${BASE_URL}" >> allure-results/environment.properties  
+          echo "BaseURL=${BASE_URL}" >> allure-results/environment.properties
 
       - name: Run tests
         run: npm test
@@ -83,8 +83,10 @@ jobs:
         run: |
           if [ -d "previous-history/history" ]; then
             echo "Restoring previous Allure history..."
+
             mkdir -p allure-results/history
             cp -R previous-history/history/. allure-results/history/
+
             echo "Allure history restored:"
             ls -la allure-results/history
           else
@@ -103,6 +105,7 @@ jobs:
 
           if [ -d "allure-report/history" ]; then
             cp -R allure-report/history history-to-save/
+
             echo "New Allure history prepared."
             ls -la history-to-save/history
           else
@@ -137,6 +140,7 @@ jobs:
           else
             git commit -m "Update Allure history"
             git push origin HEAD:allure-history
+
             echo "Allure history updated successfully."
           fi
 
@@ -146,6 +150,15 @@ jobs:
         with:
           name: allure-report
           path: allure-report/
+          if-no-files-found: warn
+
+      - name: Upload Playwright Traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          if-no-files-found: ignore
 
       - name: Upload Allure Report to Pages
         if: always()
@@ -153,11 +166,8 @@ jobs:
         with:
           path: allure-report/
 
-
   deploy:
-
     needs: test
-
     if: always()
 
     runs-on: ubuntu-latest

@@ -13,7 +13,7 @@ export class LoginPage {
         this.usernameInput = page.getByTestId('components-auth-auth-login-email');
         this.passwordInput = page.getByTestId('components-auth-password');
         this.loginButton = page.getByRole('button', { name: 'Login' });
-        this.otpPageElement = page.getByTestId('components-auth-auth-login-otp');
+        this.otpPageElement = page.getByTestId('components-auth-login-otp');
     }
 
     async open() {
