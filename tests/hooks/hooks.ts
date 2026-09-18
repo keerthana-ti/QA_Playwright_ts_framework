@@ -1,10 +1,11 @@
 import { Before, After, setDefaultTimeout } from '@cucumber/cucumber';
-import { chromium } from '@playwright/test';
+import { chromium, request } from '@playwright/test';
 import { readFile } from 'fs/promises';
 import { CustomWorld } from './world';
 import { LoginPage } from '../../pages/LoginPages';
+import { ApiClient } from '../../api/api-utilis/ApiClient';
 
-setDefaultTimeout(10000);
+setDefaultTimeout(30000);
 
 Before(async function (this: CustomWorld) {
 
@@ -17,6 +18,10 @@ Before(async function (this: CustomWorld) {
     this.page = await this.context.newPage();
 
     this.loginPage = new LoginPage(this.page);
+
+    this.apiContext = await request.newContext();
+
+    this.apiClient = new ApiClient(this.apiContext);
 
     await this.context.tracing.start({
         screenshots: true,
@@ -71,7 +76,7 @@ After(async function (this: CustomWorld, scenario) {
         // Scenario passed - discard trace
         await this.context.tracing.stop();
     }
-
+    await this.apiContext.dispose();
     await this.page.close();
     await this.context.close();
     await this.browser.close();

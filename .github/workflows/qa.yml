@@ -19,7 +19,10 @@ jobs:
 
     env:
       BASE_URL: ${{ vars.BASE_URL }}
+      API_BASE_URL: ${{ vars.API_BASE_URL }}
       CHAINEX_PASSWORD: ${{ secrets.CHAINEX_PASSWORD }}
+      CHAINEX_ENCRYPTED_EMAIL: ${{ secrets.CHAINEX_ENCRYPTED_EMAIL }}
+      CHAINEX_ENCRYPTED_PASSWORD: ${{ secrets.CHAINEX_ENCRYPTED_PASSWORD }}
 
     steps:
 
@@ -54,8 +57,9 @@ jobs:
           echo "===== Environment ====="
           echo "Node: $(node --version)"
           echo "NPM: $(npm --version)"
-          echo "BASE_URL configured: ${BASE_URL:+YES}"
-          echo "CHAINEX_PASSWORD configured: ${CHAINEX_PASSWORD:+YES}"
+          echo "API_BASE_URL configured: ${API_BASE_URL:+YES}"
+          echo "CHAINEX_ENCRYPTED_EMAIL configured: ${CHAINEX_ENCRYPTED_EMAIL:+YES}"
+          echo "CHAINEX_ENCRYPTED_PASSWORD configured: ${CHAINEX_ENCRYPTED_PASSWORD:+YES}"
 
       - name: Install dependencies
         run: npm ci
@@ -77,6 +81,10 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Run API tests
+        if: always()
+        run: npm run test:api  
 
       - name: Restore Allure History
         if: always()
